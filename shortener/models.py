@@ -19,6 +19,6 @@ class Link(models.Model):
     @classmethod
     def create(cls, link, slink, ip):
         for short in slink:
-            l = cls(long_link=link, short_link=short, ip=ip)
+            l = cls(long_link=link, short_link=short[1], ip=ip)
             l.save()
         return

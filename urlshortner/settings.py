@@ -122,4 +122,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "shortener\\templates\\static"),
 ]
-print(STATICFILES_DIRS)

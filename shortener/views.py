@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from . import models, apps, utils
+from .models import Link
 from . import settings
 import requests, urllib.parse, json
 
@@ -10,6 +11,10 @@ import requests, urllib.parse, json
 
 def index(request):
     return render(request, 'index.html')
+
+def history(request):
+    ip = utils.get_client_ip(request)
+    return render(request, 'history.html', {'links': Link.objects.filter(ip=ip)})
 
 def short_link(request):
     if (request.method != "POST" and request.method != "GET"):
