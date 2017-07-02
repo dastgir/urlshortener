@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-from . import models, apps, utils
+from . import models, apps, utils, settings
 from .models import Link
-from . import settings
-import requests, urllib.parse, json
+
+from .templates.api import API
 
 # Create your views here.
 
@@ -38,25 +38,15 @@ def short_link(request):
 
     ip = utils.get_client_ip(request)
 
-    short_links = []
+    api = API(l)
     # goo.gl
-    post_data = {'longUrl': l}
-    if settings.Config.googl is not None:
-        content = requests.post("https://www.googleapis.com/urlshortener/v1/url?key={0}" .format(settings.Config.googl,), json=post_data)
-    else:
-        content = requests.post('https://www.googleapis.com/urlshortener/v1/url', json=post_data)
-    if (content.status_code == 200):
-        j = json.loads(content.text)
-        short_links.append(('goo.gl', j['id']))
+    api.googl()
     # bit.ly
-    if settings.Config.bitly is not None:
-        content = requests.get("https://api-ssl.bitly.com/v3/shorten/?access_token={0}&longUrl={1}".format(settings.Config.bitly, urllib.parse.quote(l, safe=''),))
-        if (content.status_code == 200):
-            j = json.loads(content.text)
-            if (j['status_txt'] == 'OK'):
-                short_links.append(('bit.ly', j['data']['url']))
+    api.bitly()
+    # tinyurl.com
+    api.tinyurl()
 
-    dblink = models.Link.create(l, short_links, ip)
-    if not short_links:
+    dblink = models.Link.create(l, api._short_links, ip)
+    if api.count == 0:
         return render(request, 'index.html', {'error': 'No API Found to convert into short links'})
-    return render(request, 'index.html', {'links': short_links, 'long_url': l})
+    return render(request, 'index.html', {'links': api._short_links, 'long_url': l})

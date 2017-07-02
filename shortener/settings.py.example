@@ -5,3 +5,6 @@ class Config():
     googl = ''
     # bit.ly API Key
     bitly = ''
+    # tinyurl.com doesn't Require any API Key
+    # Set to False to avoid shortening url from tinyurl
+    tinyurl = True
