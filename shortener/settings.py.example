@@ -1,5 +1,5 @@
 # Change the File name to settings.py
-class Settings():
+class Config():
     # API Keys
     # goo.gl API Key (https://developers.google.com/url-shortener/v1/getting_started)
     googl = ''

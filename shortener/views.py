@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from . import models, apps, utils
+from . import settings
 import requests, urllib.parse, json
 
 # Create your views here.
@@ -35,16 +36,16 @@ def short_link(request):
     short_links = []
     # goo.gl
     post_data = {'longUrl': l}
-    if apps.ShortenerConfig.googl is not None:
-        content = requests.post("https://www.googleapis.com/urlshortener/v1/url?key={0}" .format(apps.ShortenerConfig.googl,), json=post_data)
+    if settings.Config.googl is not None:
+        content = requests.post("https://www.googleapis.com/urlshortener/v1/url?key={0}" .format(settings.Config.googl,), json=post_data)
     else:
         content = requests.post('https://www.googleapis.com/urlshortener/v1/url', json=post_data)
     if (content.status_code == 200):
         j = json.loads(content.text)
         short_links.append(('goo.gl', j['id']))
     # bit.ly
-    if apps.ShortenerConfig.bitly is not None:
-        content = requests.get("https://api-ssl.bitly.com/v3/shorten/?access_token={0}&longUrl={1}".format(apps.ShortenerConfig.bitly, urllib.parse.quote(l, safe=''),))
+    if settings.Config.bitly is not None:
+        content = requests.get("https://api-ssl.bitly.com/v3/shorten/?access_token={0}&longUrl={1}".format(settings.Config.bitly, urllib.parse.quote(l, safe=''),))
         if (content.status_code == 200):
             j = json.loads(content.text)
             if (j['status_txt'] == 'OK'):
