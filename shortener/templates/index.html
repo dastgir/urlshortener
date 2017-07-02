@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+{# Error Template #}
+{% if error %}
+    <div class="row">
+        <div class="col s12">
+                <div class="card red accent-2">
+                    <div class="card-content white-text">
+                        <span class="card-title">Error</span>
+                        <hr>
+                        <p>{{ error }}</p>
+                    </div>
+                   <div class="card-action">
+                        <a href="{% url 'index' %}">Refresh</a>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{# Main Template #}
+<div class="row">
+	<form method="POST" action="{% url 'add' %}">{% csrf_token %}
+		<div class="col input-field offset-s4 s4">
+			<input name="link" type="text" placeholder="Enter Full Link" required>
+		</div>
+		<div class="col input-field offset-s5 s3">
+			<button class="btn waves-effect waves-light red darken-2" type="submit" name="action">Shorten the link
+				<i class="material-icons right">play_arrow</i>
+			</button>
+		</div>
+	</form>
+</div>
+{% if links %}
+<div class="row">
+    <table class="col offset-s1 responsive-table striped s10">
+        <thead>
+            <tr>
+                <th>Site Name</th>
+                <th>Short URL</th>
+                <th>Long Url</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in links %}
+            <tr>
+                <td>{{ link.0 }}</td>
+                <td>{{ link.1 }}</td>
+                <td>{{ long_url }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
